@@ -23,13 +23,13 @@ const getTargetCoordinates = (windowInstance) => {
         winWidth,
     } = getDimensions(windowInstance)
 
-    const yBuffer = 23;
+    const yBuffer = 25;
     const x = left + (winWidth / 2)
     const y = top + (winHeight / 2) + yBuffer
 
     return {
         pullPoint: [x + 15, y],
-        restPoint: [x + 25, y],
+        restPoint: [x + 30, y],
         throwPoint: [x - 100, y - 65],
     }
 }
