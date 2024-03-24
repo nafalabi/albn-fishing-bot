@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "cap": "^0.2.1",
+    "color-classifier": "^0.0.1",
+    "readline-sync": "^1.4.10",
+    "robotjs": "^0.6.0",
+    "win-control": "^0.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30"
+  }
+}
