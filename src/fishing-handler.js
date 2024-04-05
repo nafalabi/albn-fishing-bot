@@ -8,6 +8,8 @@ const { ProcessQueue } = require("./process-queue");
 const { checkIsIgnored } = require("./enums/IgnoredFishes");
 
 class FishingHandler {
+    isEnabled = false
+
     playerId = undefined
     fishingId = 0
 
@@ -38,6 +40,10 @@ class FishingHandler {
 
         this.consumeBuff = this.consumeBuff.bind(this)
         this.equipBuff = this.equipBuff.bind(this)
+    }
+
+    setEnabled(isEnabled) {
+        this.isEnabled = isEnabled
     }
 
     updateThrowPoint(throwPoint) {
@@ -95,18 +101,21 @@ class FishingHandler {
         }, 50)
     }
 
-    stopPulling() {
-        FishingActions.rest(this.throwPoint[0], this.throwPoint[1])
+    stopPulling(firedByUser = false) {
         clearInterval(this.loopInterval)
+        if (firedByUser) return;
+        FishingActions.rest(this.throwPoint[0], this.throwPoint[1])
     }
 
     async start() {
+        if (!this.isEnabled) return;
         this.windowInstance.setForeground();
         FishingActions.throwBait(this.throwPoint[0], this.throwPoint[1])
     }
 
     async restart(playerId) {
         if (playerId !== this.playerId) return;
+        if (!this.isEnabled) return;
 
         this.stopPulling()
         await sleep(2000)

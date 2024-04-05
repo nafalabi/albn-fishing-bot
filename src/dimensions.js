@@ -31,8 +31,8 @@ const getTargetCoordinates = (windowInstance) => {
     const center = [x, y - yBuffer]
 
     return {
-        pullPoint: [x + 15, y],
-        restPoint: [x + 30, y],
+        pullPoint: [x, y],
+        restPoint: [x + 15, y],
         throwPoint: [x - 100, y - 65],
         fishBaitCoor: [center[0] + (center[0] * 0.375), center[1] + (center[1] * 0.15)],
         center,

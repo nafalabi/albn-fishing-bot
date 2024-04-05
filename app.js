@@ -28,6 +28,8 @@ const fishingHandler = new FishingHandler(
 );
 
 listener.on('event', async (res) => {
+    if (!fishingHandler.isEnabled) return;
+
     const parameters = res['parameters']
     const eventCode = parameters[252]
     const playerId = parameters[0]
@@ -60,12 +62,22 @@ listener.on('event', async (res) => {
 listener.on('request', async (req) => {
     const requestId = req?.['parameters']?.[253]
     switch (requestId) {
-        // bait touch water -> update fishingId
+        // bait touch water -> enable program
         case 316:
+            if (fishingHandler.isEnabled) return;
+            console.log('User: enable program')
             const fishingId = req.parameters[2];
             fishingHandler.updateFishingId(fishingId);
             const newThrowPoint = getCurMouseCoor();
             fishingHandler.updateThrowPoint(newThrowPoint)
+            fishingHandler.setEnabled(true)
+            break;
+        // character move -> disable program
+        case 21:
+            if (!fishingHandler.isEnabled) return;
+            console.log('User: disable program')
+            fishingHandler.stopPulling(true);
+            fishingHandler.setEnabled(false);
             break;
         default:
             break;
