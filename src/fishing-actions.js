@@ -3,10 +3,10 @@ const { sleep } = require('./utils');
 
 class FishingActions {
     static async throwBait(x, y) {
-        const minChargeTime = 50
+        const minChargeTime = 150
         const maxChargeTime = 900
         const chargeTime = Math.floor(Math.random() * (maxChargeTime - minChargeTime + 1) + minChargeTime)
-        console.log('throwBait: ', chargeTime)
+        console.log('action: throwBait - ', chargeTime)
         robot.moveMouse(x , y);
         robot.mouseToggle("down");
         await sleep(chargeTime)
@@ -14,20 +14,36 @@ class FishingActions {
     }
 
     static pull(x, y) {
-        console.log('pull')
+        console.log('action: pull')
         robot.moveMouse(x , y);
         robot.mouseToggle("down");
     }
 
     static rest(x, y) {
-        console.log('rest')
+        console.log('action: rest')
         robot.moveMouse(x , y);
         robot.mouseToggle("up");
     }
 
     static cancel() {
-        console.log('cancel')
+        console.log('action: cancel');
         robot.keyTap('escape');
+    }
+
+    static async equipBait(baitCoor) {
+        console.log('action: equip bait');
+        robot.keyTap('escape');
+        robot.keyTap('i');
+        await sleep(500)
+        robot.moveMouse(baitCoor[0], baitCoor[1]);
+        robot.mouseClick('right');
+        await sleep(100)
+        robot.keyTap('escape')
+    }
+
+    static consumeBait() {
+        console.log('action: consume bait');
+        robot.keyTap('1');
     }
 }
 

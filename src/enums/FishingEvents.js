@@ -1,4 +1,6 @@
 const FishingEvents = {
+    ActiveSpellEffectsUpdate: 10,
+    CharacterEquipmentChanged: 86,
     FishingStart: 339,
     FishingCast: 340,
     FishingCatch: 341,

@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": "node app.js",
+    "pixel-coor-test": "node ./scripts/pixel-coor-test.js"
+  },
   "dependencies": {
     "cap": "^0.2.1",
     "color-classifier": "^0.0.1",

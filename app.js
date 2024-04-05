@@ -2,9 +2,7 @@ const { Window } = require('win-control')
 const { initListener } = require('./src/event-listener')
 const { FishingEvents } = require('./src/enums/FishingEvents')
 const { FishingHandler } = require('./src/fishing-handler')
-const { getTargetCoordinates } = require('./src/dimensions')
-const { checkIsIgnored } = require('./src/enums/IgnoredFishes')
-const { sleep } = require('./src/utils')
+const { getTargetCoordinates, getCurMouseCoor } = require('./src/dimensions')
 
 const win = Window.getByTitle('Albion Online Client')
 
@@ -17,6 +15,7 @@ const {
     pullPoint,
     restPoint,
     throwPoint,
+    fishBaitCoor,
 } = getTargetCoordinates(win)
 
 const listener = initListener();
@@ -24,15 +23,14 @@ const fishingHandler = new FishingHandler(
     pullPoint,
     restPoint,
     throwPoint,
+    fishBaitCoor,
     win,
 );
-
-fishingHandler.start();
 
 listener.on('event', async (res) => {
     const parameters = res['parameters']
     const eventCode = parameters[252]
-    const fishingId = parameters[0]
+    const playerId = parameters[0]
     if (!eventCode) return
 
     switch (eventCode) {
@@ -40,20 +38,19 @@ listener.on('event', async (res) => {
             await fishingHandler.updateState(parameters);
             break;
         case FishingEvents.FishingMiniGame:
-            const isIgnored = checkIsIgnored(parameters)
-            if (isIgnored) {
-                await sleep(200)
-                fishingHandler.cancel()
-                await fishingHandler.restart(fishingId)
-                return;
-            }
-            fishingHandler.startPulling();
+            await fishingHandler.startPulling(playerId, parameters);
             break;
         case FishingEvents.FishingFinished:
-            await fishingHandler.restart(fishingId);
+            await fishingHandler.restart(playerId);
             break;
         case FishingEvents.FishingCancel:
-            await fishingHandler.restart(fishingId);
+            await fishingHandler.restart(playerId);
+            break;
+        case FishingEvents.CharacterEquipmentChanged:
+            fishingHandler.addToQueue(fishingHandler.equipBuff, playerId, parameters);
+            break;
+        case FishingEvents.ActiveSpellEffectsUpdate:
+            fishingHandler.addToQueue(fishingHandler.consumeBuff, playerId, parameters);
             break;
         default:
             break;
@@ -61,10 +58,16 @@ listener.on('event', async (res) => {
 })
 
 listener.on('request', async (req) => {
-    // check if fishing request 
-    if (req?.['parameters']?.[253] != 316) {
-        return;
+    const requestId = req?.['parameters']?.[253]
+    switch (requestId) {
+        // bait touch water -> update fishingId
+        case 316:
+            const fishingId = req.parameters[2];
+            fishingHandler.updateFishingId(fishingId);
+            const newThrowPoint = getCurMouseCoor();
+            fishingHandler.updateThrowPoint(newThrowPoint)
+            break;
+        default:
+            break;
     }
-    const playerId = req.parameters[2];
-    fishingHandler.updatePlayerId(playerId)
 })
