@@ -5,7 +5,11 @@ class ProcessQueue {
 
     addProcess(handle, args) {
         const exists = this.inQueue.some(val => val[0] === handle)
-        if (exists) return;
+        if (exists) {
+            const index = this.inQueue.indexOf(exists)
+            this.inQueue[index] = [handle, args];
+            return;
+        }
         this.inQueue.push([handle, args])
     }
 

@@ -1,16 +1,25 @@
 const robot = require('robotjs');
 const { sleep } = require('./utils');
 
+let throwChargeTime = 50;
+
 class FishingActions {
     static async throwBait(x, y) {
-        const minChargeTime = 150
-        const maxChargeTime = 900
-        const chargeTime = Math.floor(Math.random() * (maxChargeTime - minChargeTime + 1) + minChargeTime)
+        // const minChargeTime = 150
+        // const maxChargeTime = 900
+        // const chargeTime = Math.floor(Math.random() * (maxChargeTime - minChargeTime + 1) + minChargeTime)
+        const chargeTime = throwChargeTime
         console.log('action: throwBait - ', chargeTime)
         robot.moveMouse(x , y);
         robot.mouseToggle("down");
         await sleep(chargeTime)
         robot.mouseToggle("up")
+
+        if (chargeTime > 1000) {
+            throwChargeTime = 50
+        } else {
+            throwChargeTime += 150
+        }
     }
 
     static pull(x, y) {

@@ -2,10 +2,11 @@ const { FishingState } = require("./enums/FishingState");
 const { FishingActions } = require("./fishing-actions");
 const { FishBuffs } = require("./enums/FishBuffs")
 const { getActionFromCoordinates: getAction } = require("./pixels");
-const { sleep } = require("./utils");
+const { sleep, throttle } = require("./utils");
 const { Items } = require("./enums/Items");
 const { ProcessQueue } = require("./process-queue");
 const { checkIsIgnored } = require("./enums/IgnoredFishes");
+const { AutoRestart } = require("./auto-restart");
 
 class FishingHandler {
     isEnabled = false
@@ -23,7 +24,10 @@ class FishingHandler {
     fishBaitCoor = [0, 0]
     windowInstance
 
-    processQueue = new ProcessQueue()
+    /** @type {ProcessQueue} */
+    processQueue
+    /** @type {IdleDetector} */
+    autoRestart
 
     constructor(
         pullPoint,
@@ -40,10 +44,20 @@ class FishingHandler {
 
         this.consumeBuff = this.consumeBuff.bind(this)
         this.equipBuff = this.equipBuff.bind(this)
+        this.start = this.start.bind(this)
+
+        this.processQueue = new ProcessQueue()
+        this.autoRestart = new AutoRestart(this.start, 15000)
     }
 
     setEnabled(isEnabled) {
         this.isEnabled = isEnabled
+
+        if (isEnabled) {
+            this.autoRestart.turnOn()
+        } else {
+            this.autoRestart.turnOff()
+        }
     }
 
     updateThrowPoint(throwPoint) {
@@ -99,6 +113,7 @@ class FishingHandler {
                     break;
             }
         }, 50)
+        this.autoRestart.reboundTimeout()
     }
 
     stopPulling(firedByUser = false) {
@@ -113,23 +128,22 @@ class FishingHandler {
         FishingActions.throwBait(this.throwPoint[0], this.throwPoint[1])
     }
 
-    async restart(playerId) {
+    restart = throttle(async (playerId) => {
         if (playerId !== this.playerId) return;
         if (!this.isEnabled) return;
 
         this.stopPulling()
         await sleep(2000)
         await this.processQueue.executeAllSequential()
-        await sleep(100)
         await this.start()
-    }
+        this.autoRestart.reboundTimeout()
+    }, 1500)
 
     cancel() {
         FishingActions.cancel()
     }
 
     async equipBuff(playerId, parameters) {
-        console.log('exec equip')
         if (playerId !== this.playerId) return;
 
         const equipments = parameters?.[2]
