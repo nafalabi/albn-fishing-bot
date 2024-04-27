@@ -13,7 +13,10 @@ class AutoRestart {
 
     turnOn = () => {
         clearTimeout(this.id)
-        this.id = setTimeout(this.actionOnTimeout, this.timeoutTime)
+        this.id = setTimeout(() => {
+            this.actionOnTimeout()
+            this.turnOn()
+        }, this.timeoutTime)
     }
 
     turnOff = () => {

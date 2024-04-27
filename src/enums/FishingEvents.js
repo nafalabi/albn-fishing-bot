@@ -1,14 +1,14 @@
 const FishingEvents = {
     ActiveSpellEffectsUpdate: 10,
-    CharacterEquipmentChanged: 86,
-    FishingStart: 339,
-    FishingCast: 340,
-    FishingCatch: 341,
-    FishingFinished: 342,
-    FishingCancel: 343,
-    NewFloatObject: 344,
-    NewFishingZoneObject: 345,
-    FishingMiniGame: 346,
+    CharacterEquipmentChanged: 87,
+    FishingStart: 341,
+    FishingCast: 342,
+    FishingCatch: 343,
+    FishingFinished: 344,
+    FishingCancel: 345,
+    NewFloatObject: 346,
+    NewFishingZoneObject: 347,
+    FishingMiniGame: 348,
 }
 
 module.exports = {

@@ -26,7 +26,7 @@ class FishingHandler {
 
     /** @type {ProcessQueue} */
     processQueue
-    /** @type {IdleDetector} */
+    /** @type {AutoRestart} */
     autoRestart
 
     constructor(
@@ -88,6 +88,7 @@ class FishingHandler {
             default:
                 break;
         }
+        this.autoRestart.reboundTimeout()
     }
 
     async startPulling(playerId, parameters) {
