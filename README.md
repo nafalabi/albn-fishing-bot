@@ -9,6 +9,8 @@ the fishing event packets, reading pixel changes and sending mouse events. No in
 ### Thanks to
 [FashionFlora](https://github.com/FashionFlora) for his packet sniffing method on his [project](https://github.com/FashionFlora/Albion-Online-Radar-QRadar)
 
+### Preview
+![preview](showcase/preview.gif)
 
 this bot would not be possible without incredible packages:
 - [cap](https://github.com/mscdex/cap)
